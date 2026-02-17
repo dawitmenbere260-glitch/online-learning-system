@@ -1,0 +1,13 @@
+{
+  "name": "online-learning-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -c \"#93c5fd,#fb7185\" \"cd backend && composer run dev\" \"cd frontend && npm run dev\" --names=backend,frontend --kill-others",
+    "install": "cd backend && composer install && cd ../frontend && npm install",
+    "build": "cd backend && composer run build && cd ../frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
