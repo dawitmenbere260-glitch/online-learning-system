@@ -24,7 +24,7 @@ class MaterialController extends Controller
     // Upload/create material
     public function store(Request $request, Course $course)
     {
-        if ($course->instructor_id !== auth()->id()) {
+        if ($course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -67,7 +67,7 @@ class MaterialController extends Controller
     // Update material
     public function update(Request $request, CourseMaterial $material)
     {
-        if ($material->course->instructor_id !== auth()->id()) {
+        if ($material->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -88,7 +88,7 @@ class MaterialController extends Controller
     // Delete material
     public function destroy(CourseMaterial $material)
     {
-        if ($material->course->instructor_id !== auth()->id()) {
+        if ($material->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -25,7 +25,7 @@ class QuizController extends Controller
     // Create new quiz
     public function store(Request $request, Course $course)
     {
-        if ($course->instructor_id !== auth()->id()) {
+        if ($course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -56,7 +56,7 @@ class QuizController extends Controller
     // Update quiz
     public function update(Request $request, Quiz $quiz)
     {
-        if ($quiz->course->instructor_id !== auth()->id()) {
+        if ($quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -78,7 +78,7 @@ class QuizController extends Controller
     // Delete quiz
     public function destroy(Quiz $quiz)
     {
-        if ($quiz->course->instructor_id !== auth()->id()) {
+        if ($quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -90,7 +90,7 @@ class QuizController extends Controller
     // Add question to quiz
     public function addQuestion(Request $request, Quiz $quiz)
     {
-        if ($quiz->course->instructor_id !== auth()->id()) {
+        if ($quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -111,7 +111,7 @@ class QuizController extends Controller
     // Update question
     public function updateQuestion(Request $request, QuizQuestion $question)
     {
-        if ($question->quiz->course->instructor_id !== auth()->id()) {
+        if ($question->quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -132,7 +132,7 @@ class QuizController extends Controller
     // Delete question
     public function deleteQuestion(QuizQuestion $question)
     {
-        if ($question->quiz->course->instructor_id !== auth()->id()) {
+        if ($question->quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -243,7 +243,7 @@ class QuizController extends Controller
     // Get all attempts for a quiz (instructor)
     public function attempts(Quiz $quiz)
     {
-        if ($quiz->course->instructor_id !== auth()->id()) {
+        if ($quiz->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

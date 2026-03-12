@@ -127,4 +127,45 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User unblocked successfully', 'user' => $user]);
     }
+
+    // Get instructor profile
+    public function instructorProfile()
+    {
+        $user = auth()->user();
+        $user->load('instructedCourses');
+        $user->loadCount(['instructedCourses', 'enrollments']);
+        
+        // Add instructor-specific stats
+        $stats = [
+            'total_courses' => $user->instructedCourses->count(),
+            'published_courses' => $user->instructedCourses->where('status', 'published')->count(),
+            'total_students' => \App\Models\Enrollment::whereHas('course', function($query) use ($user) {
+                $query->where('instructor_id', $user->id);
+            })->distinct('user_id')->count(),
+        ];
+        
+        $user->instructor_stats = $stats;
+        
+        return response()->json($user);
+    }
+
+    // Update instructor profile
+    public function updateInstructorProfile(Request $request)
+    {
+        $user = auth()->user();
+        
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'bio' => 'nullable|string|max:1000',
+            'avatar' => 'nullable|string|max:255', // URL to avatar image
+        ]);
+
+        $user->update($request->only(['name', 'email', 'bio', 'avatar']));
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
+    }
 }

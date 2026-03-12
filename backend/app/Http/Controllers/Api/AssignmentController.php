@@ -25,7 +25,7 @@ class AssignmentController extends Controller
     public function store(Request $request, Course $course)
     {
         // Check if user is the course instructor
-        if ($course->instructor_id !== auth()->id()) {
+        if ($course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -55,7 +55,7 @@ class AssignmentController extends Controller
     // Update assignment
     public function update(Request $request, Assignment $assignment)
     {
-        if ($assignment->course->instructor_id !== auth()->id()) {
+        if ($assignment->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -76,7 +76,7 @@ class AssignmentController extends Controller
     // Delete assignment
     public function destroy(Assignment $assignment)
     {
-        if ($assignment->course->instructor_id !== auth()->id()) {
+        if ($assignment->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -88,7 +88,7 @@ class AssignmentController extends Controller
     // Get all submissions for an assignment (instructor only)
     public function submissions(Assignment $assignment)
     {
-        if ($assignment->course->instructor_id !== auth()->id()) {
+        if ($assignment->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -147,7 +147,7 @@ class AssignmentController extends Controller
     // Grade submission (instructor)
     public function grade(Request $request, AssignmentSubmission $submission)
     {
-        if ($submission->assignment->course->instructor_id !== auth()->id()) {
+        if ($submission->assignment->course->instructor_id !== auth()->id() && !auth()->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -56,6 +56,16 @@ export const courseAPI = {
   enroll: (id: string) => api.post(`/courses/${id}/enroll`),
 };
 
+// Instructor API
+export const instructorAPI = {
+  getDashboard: () => api.get('/instructor/dashboard'),
+  getCourses: (params?: any) => api.get('/instructor/courses', { params }),
+  getCourseStudents: (courseId: string) => api.get(`/instructor/courses/${courseId}/students`),
+  getRecentActivity: () => api.get('/instructor/recent-activity'),
+  getProfile: () => api.get('/instructor/profile'),
+  updateProfile: (data: any) => api.put('/instructor/profile', data),
+};
+
 // Lesson API
 export const lessonAPI = {
   getByCourse: (courseId: string) => api.get(`/courses/${courseId}/lessons`),

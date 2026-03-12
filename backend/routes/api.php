@@ -30,6 +30,16 @@ Route::middleware(['auth:sanctum', 'check.blocked'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
+    // Instructor routes
+    Route::middleware('instructor')->group(function () {
+        Route::get('/instructor/dashboard', [CourseController::class, 'instructorDashboard']);
+        Route::get('/instructor/courses', [CourseController::class, 'instructorCourses']);
+        Route::get('/instructor/courses/{course}/students', [CourseController::class, 'courseStudents']);
+        Route::get('/instructor/recent-activity', [CourseController::class, 'recentActivity']);
+        Route::get('/instructor/profile', [UserController::class, 'instructorProfile']);
+        Route::put('/instructor/profile', [UserController::class, 'updateInstructorProfile']);
+    });
+
     // Course management (for instructors)
     Route::post('/courses', [CourseController::class, 'store']);
     Route::put('/courses/{course}', [CourseController::class, 'update']);

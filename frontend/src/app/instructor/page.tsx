@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { courseAPI, authAPI } from '@/lib/api';
+import { courseAPI, authAPI, instructorAPI } from '@/lib/api';
 
 interface Course {
   id: number;
@@ -41,28 +41,32 @@ export default function InstructorDashboard() {
 
   const fetchInstructorCourses = async () => {
     try {
-      // Fetch all courses with a cache-busting parameter
-      const response = await courseAPI.getAll();
-      const allCourses = response.data.data || [];
+      console.log('🔍 Fetching instructor courses...');
+      console.log('🔑 Auth token:', localStorage.getItem('auth_token') ? 'Present' : 'Missing');
+      console.log('👤 User data:', localStorage.getItem('user') ? 'Present' : 'Missing');
       
-      // Get current user from localStorage
-      const userData = localStorage.getItem('user');
-      if (!userData) return;
+      // Use the instructor-specific API endpoint that includes draft courses
+      const response = await instructorAPI.getCourses();
+      console.log('✅ API Response:', response);
       
-      const currentUser = JSON.parse(userData);
+      const courses = response.data.data || [];
+      console.log('📚 Courses received:', courses.length);
+      console.log('📋 Course details:', courses);
       
-      // Filter courses by current user (instructor)
-      const userCourses = allCourses.filter((course: any) => 
-        course.instructor && course.instructor.id === currentUser.id
-      );
+      setCourses(courses);
+    } catch (error: any) {
+      console.error('❌ Error fetching instructor courses:', error);
+      console.error('❌ Error response:', error.response);
+      console.error('❌ Error status:', error.response?.status);
+      console.error('❌ Error data:', error.response?.data);
       
-      console.log('Total courses:', allCourses.length);
-      console.log('User courses:', userCourses.length);
-      console.log('Current user ID:', currentUser.id);
-      
-      setCourses(userCourses);
-    } catch (error) {
-      console.error('Error fetching courses:', error);
+      // If unauthorized, redirect to login
+      if (error.response?.status === 401) {
+        console.log('🔄 Unauthorized - redirecting to login');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     } finally {
       setIsLoading(false);
     }
@@ -115,12 +119,32 @@ export default function InstructorDashboard() {
               Manage your courses and track student progress
             </p>
           </div>
-          <Link
-            href="/instructor/courses/create"
-            className="bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-600 transition-colors"
-          >
-            Create New Course
-          </Link>
+          <div className="flex space-x-4">
+            <button
+              onClick={fetchInstructorCourses}
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+            >
+              Refresh Courses
+            </button>
+            <Link
+              href="/instructor/courses/create"
+              className="bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-600 transition-colors"
+            >
+              Create New Course
+            </Link>
+          </div>
+        </div>
+
+        {/* Debug Info (remove in production) */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-medium text-yellow-800 mb-2">Debug Information:</h3>
+          <div className="text-xs text-yellow-700 space-y-1">
+            <div>Auth Token: {localStorage.getItem('auth_token') ? '✅ Present' : '❌ Missing'}</div>
+            <div>User Data: {localStorage.getItem('user') ? '✅ Present' : '❌ Missing'}</div>
+            <div>User Role: {user?.role || 'Unknown'}</div>
+            <div>API Base URL: {process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'}</div>
+            <div>Courses Loaded: {courses.length}</div>
+          </div>
         </div>
 
         {/* Stats Cards */}

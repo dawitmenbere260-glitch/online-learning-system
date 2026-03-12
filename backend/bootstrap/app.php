@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'instructor' => \App\Http\Middleware\InstructorMiddleware::class,
             'check.blocked' => \App\Http\Middleware\CheckBlocked::class,
         ]);
     })
